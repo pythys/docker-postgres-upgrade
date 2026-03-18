@@ -1,12 +1,18 @@
 FROM {{ .from }}
 
-RUN sed -i 's/$/ {{ .old }}/' /etc/apt/sources.list.d/pgdg.list
+{{ if .archive then "RUN set -eux; apt-get update; apt-get install -y --no-install-recommends ca-certificates gnupg wget; wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/postgresql.gpg; rm -rf /var/lib/apt/lists/*" else "" end }}
+
+{{ if .archive then "RUN printf 'deb https://apt-archive.postgresql.org/pub/repos/apt " + .archive + " main\\n' > /etc/apt/sources.list.d/pgdg.list" else "" end }}
+
+{{ if .archive then "" else "RUN sed -i 's/$/ " + .old + "/' /etc/apt/sources.list.d/pgdg.list" end }}
 
 RUN set -eux; \
-	apt-get install --update -y --no-install-recommends \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
 		postgresql-{{ .old }}={{ .version | @sh }} \
 	; \
-	apt-get dist-clean
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/{{ .old }}/bin
 ENV PGBINNEW /usr/lib/postgresql/{{ .new }}/bin
@@ -18,7 +24,7 @@ RUN set -eux; \
 	def dir($ver):
 		"/var/lib/postgresql/\($ver)/\(
 			# TODO swap 100% from /data to /docker (https://github.com/docker-library/postgres/pull/1259)
-			if IN($ver; "13", "14", "15", "16", "17") then
+			if IN($ver; "12", "13", "14", "15", "16", "17") then
 				"data"
 			else
 				"docker"

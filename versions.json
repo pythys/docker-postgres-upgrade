@@ -23,6 +23,13 @@
     "old": "14",
     "version": "14.22-1.pgdg13+1"
   },
+  "12-to-18": {
+    "from": "postgres:18-bookworm",
+    "new": "18",
+    "old": "12",
+    "version": "12.22-3.pgdg12+1",
+    "archive": "bookworm-pgdg-archive"
+  },
   "16-to-17": {
     "from": "postgres:17-trixie",
     "new": "17",
