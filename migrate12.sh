@@ -12,9 +12,9 @@ docker volume create "$NEW_VOL"
 
 docker run --rm \
   --mount type=volume,src="$OLD_VOL",dst=/var/lib/postgresql/12/data \
-  --mount type=volume,src="$NEW_VOL",dst=/var/lib/postgresql/18/docker \
+  --mount type=volume,src="$NEW_VOL",dst=/var/lib/postgresql/18/data \
   -e PGDATAOLD=/var/lib/postgresql/12/data \
-  -e PGDATANEW=/var/lib/postgresql/18/docker \
+  -e PGDATANEW=/var/lib/postgresql/18/data \
   -e POSTGRES_INITDB_ARGS="--no-data-checksums -U $POSTGRES_USER" \
   tianon/postgres-upgrade:12-to-18 \
   --username="$POSTGRES_USER"
